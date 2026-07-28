@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Acordo, AcordoInput, Parcela } from "@/lib/types";
 import { computeUpcoming, enrich, normalizeMoney, summarize, type Enriched } from "@/lib/compute";
 import * as api from "@/lib/api";
+import { createBrowserSupabase } from "@/lib/supabase-browser";
+import { useRouter } from "next/navigation";
 import Dashboard from "./Dashboard";
 import DevedorList from "./DevedorList";
 import EditModal from "./EditModal";
@@ -21,6 +23,9 @@ export default function AppShell() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Acordo | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const reload = useCallback(async () => {
     const [a, p] = await Promise.all([api.getAcordos(), api.getParcelas()]);
@@ -34,6 +39,18 @@ export default function AppShell() {
       .catch((e) => setError(e instanceof Error ? e.message : "Falha ao carregar os dados."))
       .finally(() => setLoading(false));
   }, [reload]);
+
+  useEffect(() => {
+    createBrowserSupabase()
+      .auth.getUser()
+      .then(({ data }) => setUserEmail(data.user?.email ?? null));
+  }, []);
+
+  const signOut = async () => {
+    await createBrowserSupabase().auth.signOut();
+    router.replace("/login");
+    router.refresh();
+  };
 
   const enriched: Enriched[] = useMemo(() => acordos.map(enrich), [acordos]);
   const summary = useMemo(() => summarize(enriched), [enriched]);
@@ -104,8 +121,18 @@ export default function AppShell() {
   return (
     <>
       <header className="top">
-        <h1>Cheques &amp; Promissórias</h1>
-        <p>Painel de acompanhamento de recebíveis · dados via API {gerado && `· gerado em ${gerado}`}</p>
+        <div className="top-inner">
+          <div>
+            <h1>Cheques &amp; Promissórias</h1>
+            <p>Painel de acompanhamento de recebíveis · dados via API {gerado && `· gerado em ${gerado}`}</p>
+          </div>
+          <div className="top-actions">
+            {userEmail && <span className="top-user">{userEmail}</span>}
+            <button className="btn on-dark" onClick={signOut}>
+              Sair
+            </button>
+          </div>
+        </div>
       </header>
 
       <nav className="tabs">
