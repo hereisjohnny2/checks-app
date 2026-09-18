@@ -11,6 +11,10 @@ import { NextResponse, type NextRequest } from "next/server";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)!;
 
+function isJwtClockSkewError(error: unknown): boolean {
+  return error instanceof Error && /jwt issued at future|issued at future/i.test(error.message);
+}
+
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -32,10 +36,20 @@ export async function proxy(request: NextRequest) {
   try {
     const {
       data: { user: u },
+      error,
     } = await supabase.auth.getUser();
-    user = u;
-  } catch {
+
+    if (error && isJwtClockSkewError(error)) {
+      user = null;
+    } else {
+      user = u;
+    }
+  } catch (error) {
     user = null; // rede/config indisponível: trata como não autenticado
+    if (isJwtClockSkewError(error)) {
+      response.cookies.delete("sb-access-token");
+      response.cookies.delete("sb-refresh-token");
+    }
   }
 
   const path = request.nextUrl.pathname;

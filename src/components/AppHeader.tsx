@@ -20,8 +20,21 @@ export default function AppHeader({ title, subtitle, href = "/" }: Props) {
     setDarkMode(window.localStorage.getItem("checks-app-theme") !== "light");
     createBrowserSupabase()
       .auth.getUser()
-      .then(({ data }) => setUserEmail(data.user?.email ?? null));
-  }, []);
+      .then(({ data, error }) => {
+        if (error && /jwt issued at future|issued at future/i.test(error.message)) {
+          void createBrowserSupabase().auth.signOut();
+          router.replace("/login");
+          return;
+        }
+
+        setUserEmail(data.user?.email ?? null);
+      })
+      .catch(() => {
+        // Sessão inválida ou em clock skew: limpar e mandar para login.
+        void createBrowserSupabase().auth.signOut();
+        router.replace("/login");
+      });
+  }, [router]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = darkMode ? "dark" : "light";
