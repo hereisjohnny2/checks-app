@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { listAcordos, insertAcordo, sanitizeAcordo } from "@/lib/db";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -7,6 +8,11 @@ const errMsg = (e: unknown) => (e instanceof Error ? e.message : "Erro inesperad
 
 // GET /api/acordos  -> lista todos os acordos
 export async function GET() {
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+  }
+
   try {
     return NextResponse.json(await listAcordos());
   } catch (e) {
@@ -16,6 +22,11 @@ export async function GET() {
 
 // POST /api/acordos -> cria um novo acordo
 export async function POST(request: Request) {
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+  }
+
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
     return NextResponse.json({ error: "Corpo inválido." }, { status: 400 });

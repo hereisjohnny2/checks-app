@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { updateAcordo, deleteAcordo, pickAcordoPatch } from "@/lib/db";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,11 @@ const errMsg = (e: unknown) => (e instanceof Error ? e.message : "Erro inesperad
 
 // PUT /api/acordos/:id -> atualiza (parcial ou total) um acordo
 export async function PUT(request: Request, { params }: Params) {
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+  }
+
   const { id } = await params;
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
@@ -33,6 +39,11 @@ export async function PUT(request: Request, { params }: Params) {
 
 // DELETE /api/acordos/:id -> remove um acordo
 export async function DELETE(_request: Request, { params }: Params) {
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+  }
+
   const { id } = await params;
   try {
     const ok = await deleteAcordo(id);
