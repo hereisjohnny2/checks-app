@@ -64,7 +64,7 @@ export default function LoginPage() {
   return (
     <div className="login-wrap">
       <form className="login-card" onSubmit={isLogin ? login : sendReset}>
-        <h1>Cheques &amp; Promissórias</h1>
+        <h1>Duo Painel Admin</h1>
         <p className="login-sub">{isLogin ? "Entre para acessar o painel" : "Recuperar acesso"}</p>
 
         <div className="field">
