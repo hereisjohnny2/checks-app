@@ -129,7 +129,7 @@ export default function AppShell() {
   if (!moduleEnabled) {
     return (
       <>
-        <AppHeader title="Duo Painel Admin" subtitle="Módulo de débitos desativado." />
+        <AppHeader title="Duo Painel Admin" subtitle="Módulo de débitos desativado." href="/debitos" />
         <main>
           <p className="status-msg">Este módulo está desativado. Ative-o nas configurações para acessar os débitos.</p>
         </main>
@@ -139,7 +139,7 @@ export default function AppShell() {
 
   return (
     <>
-      <AppHeader title="Duo Painel Admin" subtitle={`Módulo de débitos · dados via API ${gerado && `· gerado em ${gerado}`}`} />
+      <AppHeader title="Duo Painel Admin" subtitle={`Módulo de débitos · dados via API ${gerado && `· gerado em ${gerado}`}`} href="/debitos" />
 
       <nav className="tabs">
         <button className={`tab-btn${tab === "dashboard" ? " active" : ""}`} onClick={() => setTab("dashboard")}>

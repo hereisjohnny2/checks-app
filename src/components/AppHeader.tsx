@@ -8,15 +8,16 @@ import { createBrowserSupabase } from "@/lib/supabase-browser";
 interface Props {
   title: string;
   subtitle: string;
+  href?: string;
 }
 
-export default function AppHeader({ title, subtitle }: Props) {
+export default function AppHeader({ title, subtitle, href = "/" }: Props) {
   const router = useRouter();
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    setDarkMode(window.localStorage.getItem("checks-app-theme") === "dark");
+    setDarkMode(window.localStorage.getItem("checks-app-theme") !== "light");
     createBrowserSupabase()
       .auth.getUser()
       .then(({ data }) => setUserEmail(data.user?.email ?? null));
@@ -37,7 +38,11 @@ export default function AppHeader({ title, subtitle }: Props) {
     <header className="top">
       <div className="top-inner">
         <div>
-          <h1>{title}</h1>
+          <h1>
+            <Link className="brand-link" href={href}>
+              {title}
+            </Link>
+          </h1>
           <p>{subtitle}</p>
         </div>
         <div className="top-actions">
