@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Cheques & Promissórias — Painel",
-  description: "Painel de acompanhamento de recebíveis (cheques e promissórias).",
+  title: "Duo Painel Admin",
+  description: "Painel administrativo modular.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

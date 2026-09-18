@@ -4,11 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Acordo, AcordoInput, Parcela } from "@/lib/types";
 import { computeUpcoming, enrich, normalizeMoney, summarize, type Enriched } from "@/lib/compute";
 import * as api from "@/lib/api";
-import { createBrowserSupabase } from "@/lib/supabase-browser";
-import { useRouter } from "next/navigation";
 import Dashboard from "./Dashboard";
 import DevedorList from "./DevedorList";
 import EditModal from "./EditModal";
+import { readModuleState } from "@/lib/modules";
+import AppHeader from "./AppHeader";
 
 type Tab = "dashboard" | "devedor";
 
@@ -20,13 +20,10 @@ export default function AppShell() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [gerado, setGerado] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const [moduleEnabled, setModuleEnabled] = useState(true);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Acordo | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-
-  const router = useRouter();
 
   const reload = useCallback(async () => {
     const [a, p] = await Promise.all([api.getAcordos(), api.getParcelas()]);
@@ -42,25 +39,8 @@ export default function AppShell() {
   }, [reload]);
 
   useEffect(() => {
-    setDarkMode(window.localStorage.getItem("checks-app-theme") === "dark");
+    setModuleEnabled(readModuleState().debitos);
   }, []);
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = darkMode ? "dark" : "light";
-    window.localStorage.setItem("checks-app-theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
-
-  useEffect(() => {
-    createBrowserSupabase()
-      .auth.getUser()
-      .then(({ data }) => setUserEmail(data.user?.email ?? null));
-  }, []);
-
-  const signOut = async () => {
-    await createBrowserSupabase().auth.signOut();
-    router.replace("/login");
-    router.refresh();
-  };
 
   const enriched: Enriched[] = useMemo(() => acordos.map(enrich), [acordos]);
   const summary = useMemo(() => summarize(enriched), [enriched]);
@@ -146,25 +126,20 @@ export default function AppShell() {
     setModalOpen(true);
   };
 
+  if (!moduleEnabled) {
+    return (
+      <>
+        <AppHeader title="Duo Painel Admin" subtitle="Módulo de débitos desativado." />
+        <main>
+          <p className="status-msg">Este módulo está desativado. Ative-o nas configurações para acessar os débitos.</p>
+        </main>
+      </>
+    );
+  }
+
   return (
     <>
-      <header className="top">
-        <div className="top-inner">
-          <div>
-            <h1>Cheques &amp; Promissórias</h1>
-            <p>Painel de acompanhamento de recebíveis · dados via API {gerado && `· gerado em ${gerado}`}</p>
-          </div>
-          <div className="top-actions">
-            {userEmail && <span className="top-user">{userEmail}</span>}
-            <button className="btn on-dark theme-toggle" onClick={() => setDarkMode((value) => !value)}>
-              {darkMode ? "Modo claro" : "Modo escuro"}
-            </button>
-            <button className="btn on-dark" onClick={signOut}>
-              Sair
-            </button>
-          </div>
-        </div>
-      </header>
+      <AppHeader title="Duo Painel Admin" subtitle={`Módulo de débitos · dados via API ${gerado && `· gerado em ${gerado}`}`} />
 
       <nav className="tabs">
         <button className={`tab-btn${tab === "dashboard" ? " active" : ""}`} onClick={() => setTab("dashboard")}>

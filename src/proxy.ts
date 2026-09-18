@@ -47,12 +47,14 @@ export async function proxy(request: NextRequest) {
     }
     const redirect = request.nextUrl.clone();
     redirect.pathname = "/login";
+    redirect.search = "";
+    redirect.searchParams.set("next", `${path}${request.nextUrl.search}`);
     return NextResponse.redirect(redirect);
   }
 
   if (user && path === "/login") {
     const redirect = request.nextUrl.clone();
-    redirect.pathname = "/";
+    redirect.pathname = "/debitos";
     return NextResponse.redirect(redirect);
   }
 
