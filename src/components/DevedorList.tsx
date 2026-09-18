@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Acordo } from "@/lib/types";
+import type { Acordo, AcordoInput } from "@/lib/types";
 import { fmt, STATUS_STYLE, STATUSES, type Enriched } from "@/lib/compute";
 
 interface Props {
@@ -13,9 +13,10 @@ interface Props {
   onEdit: (a: Enriched) => void;
   onDelete: (a: Enriched) => void;
   onStatusChange: (a: Enriched, status: string) => void;
+  onFieldChange: (a: Enriched, field: keyof AcordoInput, value: string) => void;
 }
 
-export default function DevedorList({ items, search, onSearchChange, onAdd, onExport, onEdit, onDelete, onStatusChange }: Props) {
+export default function DevedorList({ items, search, onSearchChange, onAdd, onExport, onEdit, onDelete, onStatusChange, onFieldChange }: Props) {
   const [openSet, setOpenSet] = useState<Set<string>>(new Set());
   const f = search.trim().toLowerCase();
 
@@ -48,13 +49,13 @@ export default function DevedorList({ items, search, onSearchChange, onAdd, onEx
     .map((g) => ({
       ...g,
       shown: f
-        ? g.list.filter((it) => [it.devedor, it.emitente, it.status, it.tipo, it.obs, it.periodo].some((v) => String(v).toLowerCase().includes(f)))
+        ? g.list.filter((it) => [it.devedor, it.emitente, it.status, it.tipo, it.obs, it.anotacao, it.valorPago, it.periodo].some((v) => String(v).toLowerCase().includes(f)))
         : g.list,
     }))
     .filter((g) => g.shown.length > 0);
 
   return (
-    <section>
+    <section className="devedor-list">
       <div className="toolbar">
         <input
           className="search"
@@ -102,9 +103,12 @@ export default function DevedorList({ items, search, onSearchChange, onAdd, onEx
                       <th className="num">Valor Parcela</th>
                       <th className="num">Qtd</th>
                       <th className="num">Valor</th>
+                      <th className="num">Pagas</th>
+                      <th className="num">Valor Pago</th>
                       <th>Vencimento</th>
                       <th>Status</th>
                       <th>Observações</th>
+                      <th>Anotação</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
@@ -119,6 +123,27 @@ export default function DevedorList({ items, search, onSearchChange, onAdd, onEx
                           <td className="num">{it.qtd || "—"}</td>
                           <td className="num">
                             {it.finite != null ? fmt(it.finite) : it.monthly != null ? fmt(it.monthly) + "/mês" : "—"}
+                          </td>
+                          <td className="num editable-cell">
+                            <input
+                              className="inline-input number-input"
+                              type="number"
+                              min="0"
+                              step="1"
+                              defaultValue={it.parcelasPagas}
+                              placeholder="0"
+                              aria-label={`Parcelas pagas de ${it.devedor}`}
+                              onBlur={(e) => onFieldChange(it, "parcelasPagas", e.target.value)}
+                            />
+                          </td>
+                          <td className="num editable-cell">
+                            <input
+                              className="inline-input money-input"
+                              defaultValue={it.valorPago}
+                              placeholder="R$ 0,00"
+                              aria-label={`Valor pago de ${it.devedor}`}
+                              onBlur={(e) => onFieldChange(it, "valorPago", e.target.value)}
+                            />
                           </td>
                           <td>
                             {it.vencimento || "—"}
@@ -145,6 +170,15 @@ export default function DevedorList({ items, search, onSearchChange, onAdd, onEx
                             </select>
                           </td>
                           <td className="obs">{it.obs}</td>
+                          <td className="editable-cell">
+                            <input
+                              className="inline-input note-input"
+                              defaultValue={it.anotacao}
+                              placeholder="Adicionar..."
+                              aria-label={`Anotação de ${it.devedor}`}
+                              onBlur={(e) => onFieldChange(it, "anotacao", e.target.value)}
+                            />
+                          </td>
                           <td className="acts">
                             <button className="icon-btn" title="Editar" onClick={() => onEdit(it)}>
                               ✎

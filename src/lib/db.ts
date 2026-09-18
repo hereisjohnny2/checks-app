@@ -14,10 +14,13 @@ const FIELDS: (keyof AcordoInput)[] = [
   "valorParcela",
   "qtd",
   "valorTotal",
+  "parcelasPagas",
+  "valorPago",
   "vencimento",
   "periodo",
   "status",
   "obs",
+  "anotacao",
 ];
 
 /** Campo camelCase (app) -> coluna snake_case (Postgres). */
@@ -28,13 +31,16 @@ const COL: Record<keyof AcordoInput, string> = {
   valorParcela: "valor_parcela",
   qtd: "qtd",
   valorTotal: "valor_total",
+  parcelasPagas: "parcelas_pagas",
+  valorPago: "valor_pago",
   vencimento: "vencimento",
   periodo: "periodo",
   status: "status",
   obs: "obs",
+  anotacao: "anotacao",
 };
 
-const ACORDO_SELECT = "id, devedor, emitente, tipo, valor_parcela, qtd, valor_total, vencimento, periodo, status, obs";
+const ACORDO_SELECT = "id, devedor, emitente, tipo, valor_parcela, qtd, valor_total, parcelas_pagas, valor_pago, vencimento, periodo, status, obs, anotacao";
 
 interface AcordoRow {
   id: string;
@@ -44,10 +50,13 @@ interface AcordoRow {
   valor_parcela: string;
   qtd: string;
   valor_total: string;
+  parcelas_pagas: string;
+  valor_pago: string;
   vencimento: string;
   periodo: string;
   status: string;
   obs: string;
+  anotacao: string;
 }
 
 function rowToAcordo(r: AcordoRow): Acordo {
@@ -59,10 +68,13 @@ function rowToAcordo(r: AcordoRow): Acordo {
     valorParcela: r.valor_parcela,
     qtd: r.qtd,
     valorTotal: r.valor_total,
+    parcelasPagas: r.parcelas_pagas,
+    valorPago: r.valor_pago,
     vencimento: r.vencimento,
     periodo: r.periodo,
     status: r.status,
     obs: r.obs,
+    anotacao: r.anotacao,
   };
 }
 

@@ -8,10 +8,13 @@ export interface Acordo {
   valorParcela: string;
   qtd: string;
   valorTotal: string;
+  parcelasPagas: string;
+  valorPago: string;
   vencimento: string;
   periodo: string;
   status: string;
   obs: string;
+  anotacao: string;
 }
 
 /** Dados enviados pelo cliente ao criar/editar (sem o id). */

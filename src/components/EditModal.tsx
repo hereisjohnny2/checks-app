@@ -11,10 +11,13 @@ const EMPTY: AcordoInput = {
   valorParcela: "",
   qtd: "",
   valorTotal: "",
+  parcelasPagas: "",
+  valorPago: "",
   vencimento: "",
   periodo: "",
   status: "Pendente",
   obs: "",
+  anotacao: "",
 };
 
 interface Props {
@@ -123,6 +126,16 @@ export default function EditModal({ open, editing, onClose, onSave }: Props) {
               <input type="text" placeholder="R$ 0,00" value={form.valorTotal} onChange={set("valorTotal")} />
             </div>
             <div className="field">
+              <label>Parcelas Pagas</label>
+              <input type="number" min="0" step="1" placeholder="ex: 3" value={form.parcelasPagas} onChange={set("parcelasPagas")} />
+            </div>
+          </div>
+          <div className="row2">
+            <div className="field">
+              <label>Valor Pago</label>
+              <input type="text" placeholder="R$ 0,00" value={form.valorPago} onChange={set("valorPago")} />
+            </div>
+            <div className="field">
               <label>Vencimento</label>
               <input type="text" placeholder="ex: Dia 10" value={form.vencimento} onChange={set("vencimento")} />
             </div>
@@ -134,6 +147,10 @@ export default function EditModal({ open, editing, onClose, onSave }: Props) {
           <div className="field">
             <label>Observações</label>
             <textarea rows={3} placeholder="Detalhes do acordo..." value={form.obs} onChange={set("obs")} />
+          </div>
+          <div className="field">
+            <label>Anotação</label>
+            <textarea rows={3} placeholder="Anotações sobre os pagamentos..." value={form.anotacao} onChange={set("anotacao")} />
           </div>
         </div>
         <div className="modal-foot">

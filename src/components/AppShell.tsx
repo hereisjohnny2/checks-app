@@ -20,6 +20,7 @@ export default function AppShell() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [gerado, setGerado] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Acordo | null>(null);
@@ -41,6 +42,15 @@ export default function AppShell() {
   }, [reload]);
 
   useEffect(() => {
+    setDarkMode(window.localStorage.getItem("checks-app-theme") === "dark");
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = darkMode ? "dark" : "light";
+    window.localStorage.setItem("checks-app-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  useEffect(() => {
     createBrowserSupabase()
       .auth.getUser()
       .then(({ data }) => setUserEmail(data.user?.email ?? null));
@@ -58,7 +68,12 @@ export default function AppShell() {
 
   /* ---- CRUD ---- */
   const handleSave = async (data: AcordoInput) => {
-    const payload: AcordoInput = { ...data, valorParcela: normalizeMoney(data.valorParcela), valorTotal: normalizeMoney(data.valorTotal) };
+    const payload: AcordoInput = {
+      ...data,
+      valorParcela: normalizeMoney(data.valorParcela),
+      valorTotal: normalizeMoney(data.valorTotal),
+      valorPago: normalizeMoney(data.valorPago),
+    };
     try {
       if (editing) {
         const updated = await api.updateAcordo(editing.id, payload);
@@ -95,6 +110,19 @@ export default function AppShell() {
     }
   };
 
+  const handleFieldChange = async (a: Enriched, field: keyof AcordoInput, value: string) => {
+    if (value === a[field]) return;
+    const normalized = field === "valorPago" ? normalizeMoney(value) : value;
+    const prev = acordos;
+    setAcordos((list) => list.map((x) => (x.id === a.id ? { ...x, [field]: normalized } : x)));
+    try {
+      await api.updateAcordo(a.id, { [field]: normalized });
+    } catch (e) {
+      setAcordos(prev);
+      alert(e instanceof Error ? e.message : "Erro ao atualizar a parcela.");
+    }
+  };
+
   const handleExport = () => {
     const blob = new Blob([JSON.stringify(acordos, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -128,6 +156,9 @@ export default function AppShell() {
           </div>
           <div className="top-actions">
             {userEmail && <span className="top-user">{userEmail}</span>}
+            <button className="btn on-dark theme-toggle" onClick={() => setDarkMode((value) => !value)}>
+              {darkMode ? "Modo claro" : "Modo escuro"}
+            </button>
             <button className="btn on-dark" onClick={signOut}>
               Sair
             </button>
@@ -161,6 +192,7 @@ export default function AppShell() {
                 onEdit={openEdit}
                 onDelete={handleDelete}
                 onStatusChange={handleStatus}
+                onFieldChange={handleFieldChange}
               />
             )}
           </>

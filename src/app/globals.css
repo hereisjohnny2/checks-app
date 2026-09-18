@@ -11,6 +11,13 @@
   --teal: #0d9488;
   --gray: #64748b;
 }
+[data-theme="dark"] {
+  --panel: #172033;
+  --muted: #9aa9bd;
+  --line: #334155;
+  --ink: #e5edf7;
+  --soft: #202c40;
+}
 * {
   box-sizing: border-box;
 }
@@ -24,6 +31,9 @@ body {
   background: #f8fafc;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+}
+[data-theme="dark"] body {
+  background: #0f172a;
 }
 
 header.top {
@@ -54,6 +64,17 @@ header.top p {
   padding: 0 20px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
+[data-theme="dark"] .tabs,
+[data-theme="dark"] .kpi,
+[data-theme="dark"] .card,
+[data-theme="dark"] .dev-card,
+[data-theme="dark"] .modal,
+[data-theme="dark"] .st-chip,
+[data-theme="dark"] .btn,
+[data-theme="dark"] .icon-btn {
+  background: var(--panel);
+  color: var(--ink);
+}
 .tab-btn {
   appearance: none;
   border: 0;
@@ -78,6 +99,9 @@ main {
   max-width: 1180px;
   margin: 0 auto;
   padding: 24px 20px 60px;
+}
+main:has(.devedor-list) {
+  max-width: 1480px;
 }
 .status-msg {
   padding: 40px 0;
@@ -203,6 +227,19 @@ th.num {
 }
 tbody tr:hover {
   background: var(--soft);
+}
+[data-theme="dark"] .search,
+[data-theme="dark"] .field input,
+[data-theme="dark"] .field select,
+[data-theme="dark"] .field textarea,
+[data-theme="dark"] .inline-input {
+  background: #111b2e;
+  color: var(--ink);
+  border-color: var(--line);
+}
+[data-theme="dark"] .inline-input:hover,
+[data-theme="dark"] .inline-input:focus {
+  background: var(--panel);
 }
 
 .badge {
@@ -391,6 +428,12 @@ td.acts {
 .dev-head:hover {
   background: var(--soft);
 }
+[data-theme="dark"] tbody tr:hover,
+[data-theme="dark"] .dev-head:hover,
+[data-theme="dark"] .btn:hover,
+[data-theme="dark"] .icon-btn:hover {
+  background: var(--soft);
+}
 .dev-avatar {
   width: 38px;
   height: 38px;
@@ -439,6 +482,34 @@ td.acts {
   color: var(--muted);
   font-size: 12px;
   max-width: 300px;
+}
+.editable-cell {
+  min-width: 110px;
+}
+.inline-input {
+  width: 100%;
+  min-width: 90px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 6px 7px;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+}
+.inline-input:hover,
+.inline-input:focus {
+  border-color: var(--line);
+  background: #fff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+.number-input,
+.money-input {
+  text-align: right;
+}
+.note-input {
+  min-width: 150px;
 }
 .muted {
   color: var(--muted);
@@ -560,6 +631,9 @@ td.acts {
 .btn.on-dark:hover {
   background: rgba(255, 255, 255, 0.22);
 }
+.theme-toggle {
+  min-width: 108px;
+}
 
 /* Página de login */
 .login-wrap {
@@ -580,6 +654,10 @@ td.acts {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+[data-theme="dark"] .login-card {
+  background: var(--panel);
+  color: var(--ink);
 }
 .login-card h1 {
   margin: 0;
