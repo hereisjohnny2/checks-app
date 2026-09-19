@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Acordo, AcordoInput } from "@/lib/types";
+import type { AcordoInput } from "@/lib/types";
 import { fmt, STATUS_STYLE, STATUSES, type Enriched } from "@/lib/compute";
 
 interface Props {
