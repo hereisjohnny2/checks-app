@@ -1,4 +1,4 @@
-export type ModuleId = "debitos";
+export type ModuleId = "debitos" | "contas"
 
 export interface AppModule {
   id: ModuleId;
@@ -8,25 +8,32 @@ export interface AppModule {
   enabledByDefault: boolean;
 }
 
-export const APP_MODULES: AppModule[] = [
-  {
+export const APP_MODULES: {[name: string]: AppModule } = {
+  "debitos": {
     id: "debitos",
     slug: "debitos",
     label: "Débitos",
     description: "Acompanhe acordos, parcelas, pagamentos e recebíveis.",
     enabledByDefault: true,
   },
-];
+  "contas": {
+    id: "contas",
+    slug: "contas",
+    label: "Contas",
+    description: "Acompanhe contas pagas e à vencer.",
+    enabledByDefault: true,
+  },
+};
 
 export const MODULES_STORAGE_KEY = "checks-app-modules";
 
 export function readModuleState(): Record<ModuleId, boolean> {
-  const defaults = Object.fromEntries(APP_MODULES.map((module) => [module.id, module.enabledByDefault])) as Record<ModuleId, boolean>;
+  const defaults = Object.fromEntries(Object.values(APP_MODULES).map((module) => [module.id, module.enabledByDefault])) as Record<ModuleId, boolean>;
   if (typeof window === "undefined") return defaults;
 
   try {
     const stored = JSON.parse(window.localStorage.getItem(MODULES_STORAGE_KEY) ?? "{}") as Record<string, unknown>;
-    for (const module of APP_MODULES) {
+    for (const module of Object.values(APP_MODULES)) {
       const value = stored[module.id];
       if (typeof value === "boolean") defaults[module.id] = value;
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { APP_MODULES, readModuleState, saveModuleState, type ModuleId } from "@/lib/modules";
 import AppHeader from "@/components/AppHeader";
 
@@ -26,11 +26,11 @@ export default function ConfiguracoesPage() {
             <h2>Módulos</h2>
             <p>Ative somente as áreas que deseja usar agora.</p>
           </div>
-          <span className="settings-count">{APP_MODULES.length} módulo disponível</span>
+          <span className="settings-count">{Object.keys(APP_MODULES).length} módulo disponíveis</span>
         </div>
 
         <section className="module-grid" aria-label="Módulos da aplicação">
-          {APP_MODULES.map((module) => (
+          {Object.values(APP_MODULES).map((module) => (
             <article className={`module-card${modules[module.id] ? " enabled" : " disabled"}`} key={module.id}>
               <div className="module-card-icon">{module.label.charAt(0)}</div>
               <div className="module-card-content">
