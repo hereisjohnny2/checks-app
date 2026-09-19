@@ -4,9 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Acordo, AcordoInput, Parcela } from "@/lib/types";
 import { computeUpcoming, enrich, normalizeMoney, summarize, type Enriched } from "@/lib/compute";
 import * as api from "@/lib/api";
-import Dashboard from "./Dashboard";
-import DevedorList from "./DevedorList";
-import EditModal from "./EditModal";
+import Dashboard from "../../components/debitos/Dashboard";
+import DevedorList from "../../components/debitos/DevedorList";
+import EditModal from "../../components/debitos/EditModal";
 
 type Tab = "dashboard" | "devedor";
 

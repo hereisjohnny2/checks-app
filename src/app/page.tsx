@@ -12,6 +12,8 @@ export default function Home() {
     setModules(readModuleState());
   }, []);
 
+  const appModules = Object.values(APP_MODULES)
+
   return (
     <>
       <AppHeader title="Duo Painel Admin" subtitle="Escolha uma área para começar." />
@@ -22,11 +24,11 @@ export default function Home() {
             <h2>Módulos disponíveis</h2>
             <p>Acesse os módulos ativos ou gerencie sua disponibilidade.</p>
           </div>
-          <span className="settings-count">{APP_MODULES.filter((module) => modules[module.id]).length} ativo(s)</span>
+          <span className="settings-count">{appModules.filter((module) => modules[module.id]).length} ativo(s)</span>
         </div>
 
         <section className="module-grid" aria-label="Módulos disponíveis">
-          {APP_MODULES.map((module) => {
+          {appModules.map((module) => {
             const enabled = modules[module.id];
             return (
               <article className={`module-card home-module-card${enabled ? " enabled" : " disabled"}`} key={module.id}>

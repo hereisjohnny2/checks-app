@@ -1,6 +1,6 @@
 'use client'
 
-import DebitosApp from "@/components/DebitosApp";
+import DebitosApp from "@/app/debitos/DebitosApp";
 import AppShell from "@/components/AppShell";
 
 export default function DebitosPage() {
